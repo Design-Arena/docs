@@ -1,0 +1,41 @@
+---
+title: API Overview
+description: "Base URL, authentication, and headers"
+---
+
+# API Overview
+
+## Endpoint
+All requests use the following base URL:
+
+```
+https://designarena.ai/api/v1
+```
+
+## Authentication & Rate Limits
+- **Public Access**: No API key is currently required.
+- **Rate Limits**: We do not currently enforce strict rate limits, but please be reasonable. We reserve the right to block IPs that send excessive traffic.
+
+## Caching Strategy
+Leaderboard calculations are expensive. To ensure performance:
+- **CDN Caching**: Responses are cached at the edge for **5 minutes**.
+- **Stale-While-Revalidate**: We may serve slightly stale data (up to 10 minutes old) while re-calculating in the background.
+
+## Error Handling
+The API uses standard HTTP status codes.
+
+| Code | Meaning |
+|------|---------|
+| `200` | **OK** - Request succeeded. |
+| `400` | **Bad Request** - Invalid `arena` or `category` parameter. |
+| `500` | **Server Error** - Something went wrong on our end. |
+
+## Supported Arenas & Categories
+
+You can query the following combinations:
+
+| Arena | Valid Categories |
+|-------|------------------|
+| **models** | `website`, `image`, `video`, `3d`, `dataviz`, `gamedev`, `uicomponent`, `logo`, `slides`, `tts`, `stt`, `conversation` |
+| **builders** | `website`, `mobile` |
+| **agents** | `webapps` |

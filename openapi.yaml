@@ -1,0 +1,253 @@
+openapi: 3.1.0
+info:
+  title: Design Arena Public API
+  description: |
+    Public API for accessing Design Arena leaderboard data.
+    
+    Design Arena is a crowdsourced benchmarking platform where users vote on 
+    AI-generated content to determine model rankings via ELO ratings.
+  version: 1.0.0
+  contact:
+    name: Design Arena
+    url: https://designarena.ai
+
+servers:
+  - url: https://designarena.ai/api/v1
+    description: Production
+  - url: http://localhost:3000/api/v1
+    description: Local development
+
+paths:
+  /leaderboard/{arena}/{category}:
+    get:
+      summary: Get Leaderboard
+      description: |
+        Returns the current leaderboard rankings for a specific arena and category.
+        
+        Results are sorted by ELO rating (highest first) and include win/loss statistics.
+      operationId: getLeaderboard
+      tags:
+        - Leaderboard
+      parameters:
+        - name: arena
+          in: path
+          required: true
+          description: The arena type
+          schema:
+            type: string
+            enum: [models, builders, agents]
+          examples:
+            models:
+              value: models
+              summary: Models Arena - AI model comparisons
+            builders:
+              value: builders
+              summary: Builders Arena - AI builder tools
+            agents:
+              value: agents
+              summary: Agents Arena - AI agents
+        - name: category
+          in: path
+          required: true
+          description: The category within the arena
+          schema:
+            type: string
+          examples:
+            website:
+              value: website
+              summary: Website generation
+            image:
+              value: image
+              summary: Image generation
+      responses:
+        '200':
+          description: Successful response with leaderboard data
+          headers:
+            Cache-Control:
+              description: Caching directive
+              schema:
+                type: string
+                example: "public, s-maxage=300, stale-while-revalidate=600"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaderboardResponse'
+              example:
+                success: true
+                data:
+                  - displayName: "Claude Opus 4.5"
+                    provider: "anthropic"
+                    wins: 3082
+                    losses: 1809
+                    battles: 4891
+                    winRate: 63.0
+                    elo: 1329
+                    avgGenerationTimeMs: 122828
+                  - displayName: "GPT-5"
+                    provider: "openai"
+                    wins: 4862
+                    losses: 3174
+                    battles: 8036
+                    winRate: 60.5
+                    elo: 1298
+                    avgGenerationTimeMs: 88348
+                meta:
+                  arena: "models"
+                  category: "website"
+                  count: 104
+                  lastUpdated: "2026-01-02T04:00:06.216429+00:00"
+                timestamp: "2026-01-02T04:51:46.841Z"
+        '400':
+          description: Invalid arena or category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidArena:
+                  summary: Invalid arena
+                  value:
+                    success: false
+                    error:
+                      code: "INVALID_ARENA"
+                      message: "Invalid arena \"invalid\". Must be one of: models, builders, agents"
+                invalidCategory:
+                  summary: Invalid category
+                  value:
+                    success: false
+                    error:
+                      code: "INVALID_CATEGORY"
+                      message: "Invalid category \"invalid\" for arena \"models\""
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    LeaderboardResponse:
+      type: object
+      required:
+        - success
+        - data
+        - meta
+        - timestamp
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeaderboardEntry'
+        meta:
+          $ref: '#/components/schemas/LeaderboardMeta'
+        timestamp:
+          type: string
+          format: date-time
+          description: When this response was generated
+
+    LeaderboardEntry:
+      type: object
+      required:
+        - displayName
+        - provider
+        - wins
+        - losses
+        - battles
+        - winRate
+        - elo
+        - avgGenerationTimeMs
+      properties:
+        displayName:
+          type: string
+          description: Human-readable model name
+          example: "Claude Opus 4.5"
+        provider:
+          type: string
+          description: Model provider/company
+          example: "anthropic"
+        wins:
+          type: integer
+          description: Total number of tournament wins
+          example: 3082
+        losses:
+          type: integer
+          description: Total number of tournament losses
+          example: 1809
+        battles:
+          type: integer
+          description: Total number of battles (wins + losses)
+          example: 4891
+        winRate:
+          type: number
+          format: float
+          description: Win rate percentage (0-100)
+          example: 63.0
+        elo:
+          type: integer
+          description: ELO rating (higher is better, base 1200)
+          example: 1329
+        avgGenerationTimeMs:
+          type: integer
+          nullable: true
+          description: Average generation time in milliseconds
+          example: 122828
+
+    LeaderboardMeta:
+      type: object
+      required:
+        - arena
+        - category
+        - count
+        - lastUpdated
+      properties:
+        arena:
+          type: string
+          description: The arena type
+          example: "models"
+        category:
+          type: string
+          description: The category
+          example: "website"
+        count:
+          type: integer
+          description: Number of models in the leaderboard
+          example: 104
+        lastUpdated:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the leaderboard was last calculated
+          example: "2026-01-02T04:00:06.216429+00:00"
+
+    ErrorResponse:
+      type: object
+      required:
+        - success
+        - error
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              description: Error code
+              example: "INVALID_ARENA"
+            message:
+              type: string
+              description: Human-readable error message
+              example: "Invalid arena \"invalid\". Must be one of: models, builders, agents"
+
+tags:
+  - name: Leaderboard
+    description: Access leaderboard rankings for AI models across different arenas
+

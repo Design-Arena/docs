@@ -1,0 +1,65 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Design Arena",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#6366F1",
+    "light": "#818CF8",
+    "dark": "#4F46E5",
+    "anchors": {
+      "from": "#6366F1",
+      "to": "#8B5CF6"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "Website",
+      "url": "https://designarena.ai"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Try Design Arena",
+    "url": "https://designarena.ai"
+  },
+  "tabs": [
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "GitHub",
+      "icon": "github",
+      "url": "https://github.com/Design-Arena"
+    },
+    {
+      "name": "Leaderboard",
+      "icon": "chart-bar",
+      "url": "https://designarena.ai/leaderboard"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": ["introduction", "quickstart"]
+    },
+    {
+      "group": "API Reference",
+      "pages": ["api-reference/overview", "api-reference/leaderboard"]
+    }
+  ],
+  "api": {
+    "baseUrl": "https://designarena.ai/api/v1"
+  },
+  "openapi": "openapi.yaml",
+  "footerSocials": {
+    "twitter": "https://twitter.com/designarena",
+    "github": "https://github.com/Design-Arena"
+  }
+}
+
