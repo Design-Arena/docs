@@ -1,37 +1,60 @@
 ---
 title: Quickstart
-description: "Fetch live leaderboard data in seconds"
+description: "Get API access and fetch live leaderboard data"
 ---
 
 # Quickstart
 
-The Design Arena API is a RESTful service. You can query it using any HTTP client.
+The Design Arena API provides programmatic access to real-time AI model rankings from our human-evaluated arena battles.
 
-## Fetching the Leaderboard
+## Step 1: Get an API Key
 
-To get the current rankings for an arena (e.g., `models`) and a category (e.g., `website`), send a `GET` request:
+API access requires an API key. To get one:
+
+1. Go to [designarena.ai/developers/apply](https://designarena.ai/developers/apply)
+2. Fill out the application form describing your use case
+3. We'll review your application (usually 1-2 business days)
+4. Once approved, you'll receive your API key via email
+
+<Note>
+API keys start with `sk_live_` and should be kept secret. Never expose them in client-side code or public repositories.
+</Note>
+
+## Step 2: Make Your First Request
+
+Once you have your API key, authenticate requests using the `Authorization` header:
 
 <CodeGroup>
 ```bash curl
-curl https://designarena.ai/api/v1/leaderboard/models/website
+curl -H "Authorization: Bearer sk_live_your_api_key_here" \
+  https://designarena.ai/api/v1/leaderboard/models/website
 ```
 
 ```javascript Node.js
-const resp = await fetch('https://designarena.ai/api/v1/leaderboard/models/website');
+const resp = await fetch('https://designarena.ai/api/v1/leaderboard/models/website', {
+  headers: {
+    'Authorization': 'Bearer sk_live_your_api_key_here'
+  }
+});
 const data = await resp.json();
 console.log(data);
 ```
 
 ```python Python
 import requests
-resp = requests.get('https://designarena.ai/api/v1/leaderboard/models/website')
+
+headers = {'Authorization': 'Bearer sk_live_your_api_key_here'}
+resp = requests.get(
+    'https://designarena.ai/api/v1/leaderboard/models/website',
+    headers=headers
+)
 print(resp.json())
 ```
 </CodeGroup>
 
-## The Data Structure
+## The Response
 
-The response contains a sorted list of models in the `data` array. Here is a stripped-down example of what you get back:
+The response contains a sorted list of models in the `data` array:
 
 ```json
 {
@@ -46,26 +69,43 @@ The response contains a sorted list of models in the `data` array. Here is a str
       "losses": 80,
       "battles": 230,
       "avgGenerationTimeMs": 4500
-    },
-    // ... more models
+    }
   ],
   "meta": {
+    "arena": "models",
+    "category": "website",
     "count": 45,
     "lastUpdated": "2024-03-20T10:00:00Z"
-  }
+  },
+  "timestamp": "2024-03-20T10:05:00Z"
 }
 ```
 
 ## Key Metrics
 
-- **ELO**: The core ranking metric. Higher is better. Base rating is typically around 1200.
-- **Win Rate**: Percentage of head-to-head battles won.
-- **Battles**: Total sample size (wins + losses). Higher battle counts indicate more reliable ELO scores.
+| Metric | Description |
+|--------|-------------|
+| **elo** | The core ranking score. Higher is better. Base rating ~1200. |
+| **winRate** | Percentage of head-to-head battles won. |
+| **battles** | Total sample size (wins + losses). More battles = more reliable ELO. |
+| **avgGenerationTimeMs** | Average time to generate output (milliseconds). |
+
+## Error Responses
+
+| Status | Meaning |
+|--------|---------|
+| `401` | Missing or invalid API key |
+| `403` | API key is inactive or revoked |
+| `400` | Invalid arena or category |
+| `500` | Server error |
 
 ## Next Steps
 
-Explore the available endpoints to see all supported arenas and categories.
-
-<Card title="View API Reference" icon="arrow-right" href="/api-reference/leaderboard">
-  See all available categories and parameters
-</Card>
+<CardGroup cols={2}>
+  <Card title="View API Reference" icon="code" href="/api-reference/leaderboard">
+    See all available arenas and categories
+  </Card>
+  <Card title="Apply for Access" icon="key" href="https://designarena.ai/developers/apply">
+    Get your API key
+  </Card>
+</CardGroup>

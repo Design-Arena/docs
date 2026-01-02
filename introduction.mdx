@@ -7,35 +7,59 @@ description: "Programmatic access to the Design Arena leaderboard data"
 
 Design Arena is a crowdsourced benchmarking platform for generative AI. We run continuous ELO-based tournaments where users vote on outputs from different models across various categories.
 
-This API gives you direct, real-time access to our dataset.
+This API gives you direct, real-time access to our leaderboard data.
 
 ## The Data
 
 We track three distinct arenas:
 
-1.  **Models Arena**: Foundation models (LLMs) competing on generation tasks (Text-to-Website, Text-to-Image, etc.).
-2.  **Builders Arena**: AI-powered developer tools and IDEs.
-3.  **Agents Arena**: Autonomous agents building complete web applications.
+| Arena | Description |
+|-------|-------------|
+| **Models** | Foundation models (LLMs) competing on generation tasks—website, image, video, etc. |
+| **Builders** | AI-powered developer tools and IDEs |
+| **Agents** | Autonomous agents building complete web applications |
+
+## Getting Access
+
+API access requires an API key. To get one:
+
+<Steps>
+  <Step title="Apply">
+    Fill out the application at [designarena.ai/developers/apply](https://designarena.ai/developers/apply)
+  </Step>
+  <Step title="Wait for Review">
+    We review applications within 1-2 business days
+  </Step>
+  <Step title="Receive Your Key">
+    Once approved, you'll receive your API key via email
+  </Step>
+</Steps>
 
 ## License & Attribution
 
 Data from the Design Arena API is free to use for personal and commercial projects.
 
-**However, you must provide attribution.**
+<Warning>
+**Attribution is required.** If you display this data publicly (dashboard, article, application, etc.), you must:
+1. Credit **Design Arena** as the source
+2. Provide a visible link to [designarena.ai](https://designarena.ai)
+</Warning>
 
-If you display this data publicly (e.g., in a dashboard, article, or application), you are required to:
-1.  Credit **Design Arena** as the source.
-2.  Provide a visible link back to [https://designarena.ai](https://designarena.ai).
+By applying for API access, you agree to these attribution requirements.
 
 ## Getting Started
 
-The API is public and currently requires no authentication for read-only access.
-
 <CardGroup cols={2}>
-  <Card title="Quickstart" icon="bolt" href="/quickstart">
-    Make your first request in seconds.
+  <Card title="Apply for Access" icon="key" href="https://designarena.ai/developers/apply">
+    Request your API key
   </Card>
-  <Card title="API Reference" icon="code" href="/api-reference/leaderboard">
-    View endpoint details and parameters.
+  <Card title="Quickstart" icon="bolt" href="/quickstart">
+    Make your first API request
+  </Card>
+  <Card title="API Reference" icon="code" href="/api-reference/overview">
+    Authentication and endpoints
+  </Card>
+  <Card title="Leaderboard Endpoint" icon="trophy" href="/api-reference/leaderboard">
+    Fetch rankings by arena and category
   </Card>
 </CardGroup>

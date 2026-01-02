@@ -1,38 +1,82 @@
 ---
 title: API Overview
-description: "Base URL, authentication, and headers"
+description: "Authentication, endpoints, and rate limits"
 ---
 
 # API Overview
 
-## Endpoint
+## Base URL
+
 All requests use the following base URL:
 
 ```
 https://designarena.ai/api/v1
 ```
 
-## Authentication & Rate Limits
-- **Public Access**: No API key is currently required.
-- **Rate Limits**: We do not currently enforce strict rate limits, but please be reasonable. We reserve the right to block IPs that send excessive traffic.
+## Authentication
 
-## Caching Strategy
-Leaderboard calculations are expensive. To ensure performance:
-- **CDN Caching**: Responses are cached at the edge for **5 minutes**.
-- **Stale-While-Revalidate**: We may serve slightly stale data (up to 10 minutes old) while re-calculating in the background.
+All API requests require authentication using a Bearer token.
 
-## Error Handling
-The API uses standard HTTP status codes.
+<CodeGroup>
+```bash curl
+curl -H "Authorization: Bearer sk_live_your_api_key_here" \
+  https://designarena.ai/api/v1/leaderboard/models/website
+```
+
+```javascript JavaScript
+fetch('https://designarena.ai/api/v1/leaderboard/models/website', {
+  headers: { 'Authorization': 'Bearer sk_live_your_api_key_here' }
+})
+```
+
+```python Python
+requests.get(url, headers={'Authorization': 'Bearer sk_live_your_api_key_here'})
+```
+</CodeGroup>
+
+### Getting an API Key
+
+1. Apply at [designarena.ai/developers/apply](https://designarena.ai/developers/apply)
+2. Describe your use case and agree to the attribution requirements
+3. We'll review and email you your API key (usually 1-2 business days)
+
+<Warning>
+Keep your API key secret. Never expose it in client-side code, public repositories, or share it publicly.
+</Warning>
+
+## Rate Limits
+
+We do not currently enforce strict rate limits, but please be reasonable. We reserve the right to revoke keys that abuse the service.
+
+## Caching
+
+To ensure performance, responses are cached:
+- **CDN Caching**: Responses cached at the edge for **5 minutes**
+- **Stale-While-Revalidate**: May serve slightly stale data (up to 10 minutes) while refreshing
+
+## Error Codes
 
 | Code | Meaning |
 |------|---------|
-| `200` | **OK** - Request succeeded. |
-| `400` | **Bad Request** - Invalid `arena` or `category` parameter. |
-| `500` | **Server Error** - Something went wrong on our end. |
+| `200` | Success |
+| `400` | Invalid `arena` or `category` parameter |
+| `401` | Missing API key (no `Authorization` header) |
+| `403` | Invalid or revoked API key |
+| `500` | Server error |
+
+### Error Response Format
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "INVALID_API_KEY",
+    "message": "The provided API key is invalid or has been revoked"
+  }
+}
+```
 
 ## Supported Arenas & Categories
-
-You can query the following combinations:
 
 | Arena | Valid Categories |
 |-------|------------------|
