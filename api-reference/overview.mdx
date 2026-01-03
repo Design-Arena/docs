@@ -76,10 +76,18 @@ To ensure performance, responses are cached:
 }
 ```
 
+## Data Volatility
+
+Leaderboard rankings update in real-time throughout the day as new battles are recorded. Models within the same performance band may swap positions frequently. However, models that are significantly better—or in a clearly different tier—tend to remain stable within their band.
+
 ## Supported Arenas & Categories
 
 | Arena | Valid Categories |
 |-------|------------------|
-| **models** | `website`, `image`, `video`, `3d`, `dataviz`, `gamedev`, `uicomponent`, `logo`, `slides`, `tts`, `stt`, `conversation` |
-| **builders** | `website`, `mobile` |
-| **agents** | `webapps` |
+| **models** | `allcategories`, `website`, `3d`, `dataviz`, `gamedev`, `uicomponent`, `logo`, `image`, `video`, `conversation`, `stt`, `tts`, `slides`, `videotovideo`, `graphicdesign`, `imagetoimage` |
+| **builders** | `website`, `mobile`, `native-android` |
+| **agents** | `webapps`, `agon_webapps` |
+
+<Note>
+`allcategories` aggregates stats across all code generation categories: `website`, `3d`, `dataviz`, `gamedev`, and `uicomponent`.
+</Note>
