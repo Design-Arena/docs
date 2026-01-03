@@ -54,7 +54,7 @@
     }
   ],
   "api": {
-    "baseUrl": "https://designarena.ai/api/v1"
+    "baseUrl": "https://www.designarena.ai/api/v1"
   },
   "openapi": "openapi.yaml",
   "footerSocials": {
