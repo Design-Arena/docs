@@ -8,26 +8,30 @@ description: "Get current leaderboard rankings for a specific arena and category
 
 Returns the current leaderboard rankings for a specific arena and category. Results are sorted by ELO rating (highest first).
 
+<Tip>
+Use the [List Arenas](/api-reference/arenas) endpoint to discover valid arena/category combinations programmatically.
+</Tip>
+
 ## Path Parameters
 
 <ParamField path="arena" type="string" required>
   The arena type. Must be one of:
   - `models` - AI model comparisons
   - `builders` - AI builder tools
-  - `agents` - AI agents
+  - `agents` - Agentic coding workflows
 </ParamField>
 
 <ParamField path="category" type="string" required>
   The category within the arena. Valid values depend on the arena:
 
   **Models Arena:**
-  `website`, `image`, `video`, `3d`, `dataviz`, `gamedev`, `uicomponent`, `logo`, `slides`, `tts`, `stt`, `conversation`, `videotovideo`, `imagetoimage`, `graphicdesign`, `allcategories`
+  `allcategories`, `website`, `3d`, `dataviz`, `gamedev`, `uicomponent`, `logo`, `image`, `video`, `slides`, `videotovideo`, `graphicdesign`, `imagetoimage`, `svg`
 
   **Builders Arena:**
   `website`, `mobile`
 
   **Agents Arena:**
-  `webapps`, `agon_webapps`
+  `webapps`, `agon_webapps`, `fullstack`
 </ParamField>
 
 ## Response
@@ -45,6 +49,15 @@ Returns the current leaderboard rankings for a specific arena and category. Resu
     </ResponseField>
     <ResponseField name="provider" type="string">
       Model provider (e.g., "anthropic", "openai", "google")
+    </ResponseField>
+    <ResponseField name="openRouterId" type="string | null">
+      The model's identifier on [OpenRouter](https://openrouter.ai) (e.g., `anthropic/claude-opus-4.6`).
+      Use this to cross-reference leaderboard entries with OpenRouter's model catalog for pricing, context windows, and other metadata.
+
+      Returns `null` when the model is not available on OpenRouter. Common reasons include:
+      - **Proprietary builder tools** (e.g., v0, Bolt, Devin)
+      - **Image/video/audio generators** (e.g., DALL-E, Sora, Kling)
+      - **Deprecated or preview models** with no direct OpenRouter equivalent
     </ResponseField>
     <ResponseField name="wins" type="integer">
       Total tournament wins
@@ -94,12 +107,14 @@ Returns the current leaderboard rankings for a specific arena and category. Resu
 
 <RequestExample>
 ```bash curl
-curl https://www.designarena.ai/api/v1/leaderboard/models/website
+curl -H "Authorization: Bearer sk_live_your_api_key_here" \
+  https://www.designarena.ai/api/v1/leaderboard/models/website
 ```
 
 ```javascript JavaScript
 const response = await fetch(
-  'https://www.designarena.ai/api/v1/leaderboard/models/website'
+  'https://www.designarena.ai/api/v1/leaderboard/models/website',
+  { headers: { 'Authorization': 'Bearer sk_live_your_api_key_here' } }
 );
 const data = await response.json();
 ```
@@ -108,7 +123,8 @@ const data = await response.json();
 import requests
 
 response = requests.get(
-  'https://www.designarena.ai/api/v1/leaderboard/models/website'
+  'https://www.designarena.ai/api/v1/leaderboard/models/website',
+  headers={'Authorization': 'Bearer sk_live_your_api_key_here'}
 )
 data = response.json()
 ```
@@ -120,33 +136,46 @@ data = response.json()
   "success": true,
   "data": [
     {
-      "displayName": "Claude Opus 4.5",
+      "displayName": "Claude Opus 4.6",
       "provider": "anthropic",
+      "openRouterId": "anthropic/claude-opus-4.6",
       "wins": 3082,
       "losses": 1809,
       "battles": 4891,
       "winRate": 63.0,
-      "elo": 1329,
+      "elo": 1390,
       "avgGenerationTimeMs": 122828
     },
     {
-      "displayName": "GPT-5",
+      "displayName": "GPT-5.1 Codex",
       "provider": "openai",
+      "openRouterId": "openai/gpt-5.1-codex",
       "wins": 4862,
       "losses": 3174,
       "battles": 8036,
       "winRate": 60.5,
       "elo": 1298,
       "avgGenerationTimeMs": 88348
+    },
+    {
+      "displayName": "v0-1.5-lg",
+      "provider": "vercel",
+      "openRouterId": null,
+      "wins": 1200,
+      "losses": 800,
+      "battles": 2000,
+      "winRate": 60.0,
+      "elo": 1280,
+      "avgGenerationTimeMs": 45000
     }
   ],
   "meta": {
     "arena": "models",
     "category": "website",
-    "count": 104,
-    "lastUpdated": "2026-01-02T04:00:06.216429+00:00"
+    "count": 108,
+    "lastUpdated": "2026-02-22T04:00:06.216429+00:00"
   },
-  "timestamp": "2026-01-02T04:51:46.841Z"
+  "timestamp": "2026-02-22T04:51:46.841Z"
 }
 ```
 
@@ -161,6 +190,18 @@ data = response.json()
 ```
 </ResponseExample>
 
+## OpenRouter ID Mapping
+
+The `openRouterId` field enables cross-referencing Design Arena's human-evaluated rankings with OpenRouter's model catalog. This is useful for:
+
+- **Pricing lookups** — combine leaderboard quality scores with OpenRouter pricing data
+- **Model selection** — find the best model for your use case based on quality, speed, and cost
+- **Routing decisions** — use ELO scores to weight model selection in OpenRouter requests
+
+<Note>
+Models with `openRouterId: null` are not available on OpenRouter. This typically means the model is a proprietary platform (like v0 or Bolt), a non-text modality (image/video generators), or a deprecated model without a direct equivalent.
+</Note>
+
 ## Error Codes
 
 | Code | Description |
@@ -169,5 +210,3 @@ data = response.json()
 | `INVALID_CATEGORY` | The category is not valid for the specified arena |
 | `FETCH_ERROR` | Failed to fetch leaderboard data |
 | `INTERNAL_ERROR` | An unexpected error occurred |
-
-

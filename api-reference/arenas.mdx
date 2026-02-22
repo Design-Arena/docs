@@ -1,0 +1,183 @@
+---
+title: List Arenas
+api: GET /arenas
+description: "Discover available arena types and categories"
+---
+
+# List Arenas & Categories
+
+Returns all available arena types and their categories. Use this endpoint to discover valid arena/category combinations before calling the [leaderboard endpoint](/api-reference/leaderboard).
+
+<Info>
+This endpoint's response is cached for **1 hour** since arena/category configurations change infrequently.
+</Info>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the request was successful
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of arena objects
+
+  <Expandable title="Arena properties">
+    <ResponseField name="id" type="string">
+      Arena identifier — use this as the `{arena}` path parameter in the leaderboard endpoint
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      Human-readable arena name
+    </ResponseField>
+    <ResponseField name="description" type="string">
+      What this arena evaluates
+    </ResponseField>
+    <ResponseField name="categories" type="array">
+      Available categories within this arena
+
+      <Expandable title="Category properties">
+        <ResponseField name="id" type="string">
+          Category identifier — use this as the `{category}` path parameter
+        </ResponseField>
+        <ResponseField name="name" type="string">
+          Human-readable category name
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="leaderboardUrl" type="array">
+      Pre-built relative URLs for each category's leaderboard endpoint
+
+      <Expandable title="URL properties">
+        <ResponseField name="category" type="string">
+          The category this URL points to
+        </ResponseField>
+        <ResponseField name="url" type="string">
+          Relative API path (e.g., `/api/v1/leaderboard/models/website`)
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="timestamp" type="string">
+  ISO timestamp of when this response was generated
+</ResponseField>
+
+## Examples
+
+<RequestExample>
+```bash curl
+curl -H "Authorization: Bearer sk_live_your_api_key_here" \
+  https://www.designarena.ai/api/v1/arenas
+```
+
+```javascript JavaScript
+const response = await fetch(
+  'https://www.designarena.ai/api/v1/arenas',
+  { headers: { 'Authorization': 'Bearer sk_live_your_api_key_here' } }
+);
+const { data } = await response.json();
+
+// Iterate over all arenas and categories
+for (const arena of data) {
+  for (const cat of arena.categories) {
+    console.log(`${arena.name} → ${cat.name}`);
+  }
+}
+```
+
+```python Python
+import requests
+
+response = requests.get(
+  'https://www.designarena.ai/api/v1/arenas',
+  headers={'Authorization': 'Bearer sk_live_your_api_key_here'}
+)
+arenas = response.json()['data']
+
+for arena in arenas:
+    for cat in arena['categories']:
+        print(f"{arena['name']} → {cat['name']}")
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "success": true,
+  "data": [
+    {
+      "id": "models",
+      "name": "Models Arena",
+      "description": "Head-to-head comparison of AI model outputs across modalities",
+      "categories": [
+        { "id": "allcategories", "name": "Code Categories" },
+        { "id": "website", "name": "Website" },
+        { "id": "3d", "name": "3D" },
+        { "id": "dataviz", "name": "Data Visualization" },
+        { "id": "gamedev", "name": "Game Development" },
+        { "id": "uicomponent", "name": "UI Component" },
+        { "id": "logo", "name": "Logo" },
+        { "id": "image", "name": "Image" },
+        { "id": "video", "name": "Video" },
+        { "id": "slides", "name": "Slides" },
+        { "id": "videotovideo", "name": "Video to Video" },
+        { "id": "graphicdesign", "name": "Graphic Design" },
+        { "id": "imagetoimage", "name": "Image to Image" },
+        { "id": "svg", "name": "SVG" }
+      ],
+      "leaderboardUrl": [
+        { "category": "allcategories", "url": "/api/v1/leaderboard/models/allcategories" },
+        { "category": "website", "url": "/api/v1/leaderboard/models/website" }
+      ]
+    },
+    {
+      "id": "builders",
+      "name": "Builders Arena",
+      "description": "Comparison of AI-powered app builders and coding agents",
+      "categories": [
+        { "id": "website", "name": "Website" },
+        { "id": "mobile", "name": "Mobile" }
+      ],
+      "leaderboardUrl": [
+        { "category": "website", "url": "/api/v1/leaderboard/builders/website" },
+        { "category": "mobile", "url": "/api/v1/leaderboard/builders/mobile" }
+      ]
+    },
+    {
+      "id": "agents",
+      "name": "Agents Arena",
+      "description": "Agentic coding workflows evaluated end-to-end",
+      "categories": [
+        { "id": "webapps", "name": "Web Apps" },
+        { "id": "agon_webapps", "name": "Agon Web Apps" },
+        { "id": "fullstack", "name": "Full Stack" }
+      ],
+      "leaderboardUrl": [
+        { "category": "webapps", "url": "/api/v1/leaderboard/agents/webapps" },
+        { "category": "agon_webapps", "url": "/api/v1/leaderboard/agents/agon_webapps" },
+        { "category": "fullstack", "url": "/api/v1/leaderboard/agents/fullstack" }
+      ]
+    }
+  ],
+  "timestamp": "2026-02-22T18:00:00.000Z"
+}
+```
+</ResponseExample>
+
+## Usage Pattern
+
+A common pattern is to first call `/arenas` to discover what's available, then iterate:
+
+```python
+import requests
+
+BASE = 'https://www.designarena.ai/api/v1'
+HEADERS = {'Authorization': 'Bearer sk_live_your_api_key_here'}
+
+arenas = requests.get(f'{BASE}/arenas', headers=HEADERS).json()['data']
+
+for arena in arenas:
+    for url_entry in arena['leaderboardUrl']:
+        lb = requests.get(f'{BASE}{url_entry["url"]}', headers=HEADERS).json()
+        print(f"{arena['name']} / {url_entry['category']}: {lb['meta']['count']} models")
+```

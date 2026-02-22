@@ -50,7 +50,7 @@
     },
     {
       "group": "API Reference",
-      "pages": ["api-reference/overview", "api-reference/leaderboard"]
+      "pages": ["api-reference/overview", "api-reference/arenas", "api-reference/leaderboard"]
     }
   ],
   "api": {
@@ -60,6 +60,13 @@
   "footerSocials": {
     "twitter": "https://twitter.com/designarena",
     "github": "https://github.com/Design-Arena"
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "chatgpt",
+      "claude"
+    ]
   }
 }
 

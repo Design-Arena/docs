@@ -20,9 +20,30 @@ API access requires an API key. To get one:
 API keys start with `sk_live_` and should be kept secret. Never expose them in client-side code or public repositories.
 </Note>
 
-## Step 2: Make Your First Request
+## Step 2: Discover Arenas
 
-Once you have your API key, authenticate requests using the `Authorization` header:
+First, find out what arenas and categories are available:
+
+<CodeGroup>
+```bash curl
+curl -H "Authorization: Bearer sk_live_your_api_key_here" \
+  https://www.designarena.ai/api/v1/arenas
+```
+
+```python Python
+import requests
+
+headers = {'Authorization': 'Bearer sk_live_your_api_key_here'}
+resp = requests.get('https://www.designarena.ai/api/v1/arenas', headers=headers)
+for arena in resp.json()['data']:
+    cats = ', '.join(c['id'] for c in arena['categories'])
+    print(f"{arena['name']}: {cats}")
+```
+</CodeGroup>
+
+## Step 3: Fetch a Leaderboard
+
+Pick an arena and category, then fetch rankings:
 
 <CodeGroup>
 ```bash curl
@@ -61,23 +82,35 @@ The response contains a sorted list of models in the `data` array:
   "success": true,
   "data": [
     {
-      "displayName": "Claude 3.5 Sonnet",
+      "displayName": "Claude Opus 4.6",
       "provider": "anthropic",
-      "elo": 1250,
-      "winRate": 65.4,
-      "wins": 150,
-      "losses": 80,
-      "battles": 230,
-      "avgGenerationTimeMs": 4500
+      "openRouterId": "anthropic/claude-opus-4.6",
+      "elo": 1390,
+      "winRate": 63.0,
+      "wins": 3082,
+      "losses": 1809,
+      "battles": 4891,
+      "avgGenerationTimeMs": 122828
+    },
+    {
+      "displayName": "v0-1.5-lg",
+      "provider": "vercel",
+      "openRouterId": null,
+      "elo": 1280,
+      "winRate": 60.0,
+      "wins": 1200,
+      "losses": 800,
+      "battles": 2000,
+      "avgGenerationTimeMs": 45000
     }
   ],
   "meta": {
     "arena": "models",
     "category": "website",
-    "count": 45,
-    "lastUpdated": "2024-03-20T10:00:00Z"
+    "count": 108,
+    "lastUpdated": "2026-02-22T04:00:06Z"
   },
-  "timestamp": "2024-03-20T10:05:00Z"
+  "timestamp": "2026-02-22T04:51:46Z"
 }
 ```
 
@@ -89,6 +122,7 @@ The response contains a sorted list of models in the `data` array:
 | **winRate** | Percentage of head-to-head battles won. |
 | **battles** | Total sample size (wins + losses). More battles = more reliable ELO. |
 | **avgGenerationTimeMs** | Average time to generate output (milliseconds). |
+| **openRouterId** | OpenRouter model ID for cross-referencing. `null` if not on OpenRouter. |
 
 ## Error Responses
 
@@ -102,10 +136,16 @@ The response contains a sorted list of models in the `data` array:
 ## Next Steps
 
 <CardGroup cols={2}>
-  <Card title="View API Reference" icon="code" href="/api-reference/leaderboard">
-    See all available arenas and categories
+  <Card title="List Arenas" icon="layer-group" href="/api-reference/arenas">
+    Discover all available arenas and categories
+  </Card>
+  <Card title="Get Leaderboard" icon="chart-bar" href="/api-reference/leaderboard">
+    Full reference for the leaderboard endpoint
   </Card>
   <Card title="Apply for Access" icon="key" href="https://designarena.ai/developers/apply">
     Get your API key
+  </Card>
+  <Card title="View API Overview" icon="book" href="/api-reference/overview">
+    Authentication, caching, and error codes
   </Card>
 </CardGroup>

@@ -44,6 +44,13 @@ requests.get(url, headers={'Authorization': 'Bearer sk_live_your_api_key_here'})
 Keep your API key secret. Never expose it in client-side code, public repositories, or share it publicly.
 </Warning>
 
+## Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | [`/arenas`](/api-reference/arenas) | List all arenas and categories |
+| `GET` | [`/leaderboard/{arena}/{category}`](/api-reference/leaderboard) | Get leaderboard rankings |
+
 ## Rate Limits
 
 We do not currently enforce strict rate limits, but please be reasonable. We reserve the right to revoke keys that abuse the service.
@@ -51,8 +58,8 @@ We do not currently enforce strict rate limits, but please be reasonable. We res
 ## Caching
 
 To ensure performance, responses are cached:
-- **CDN Caching**: Responses cached at the edge for **5 minutes**
-- **Stale-While-Revalidate**: May serve slightly stale data (up to 10 minutes) while refreshing
+- **Leaderboard** — CDN cached for **5 minutes**, stale-while-revalidate up to 10 minutes
+- **Arenas** — CDN cached for **1 hour**, stale-while-revalidate up to 2 hours
 
 ## Error Codes
 
@@ -82,12 +89,21 @@ Leaderboard rankings update in real-time throughout the day as new battles are r
 
 ## Supported Arenas & Categories
 
+Use `GET /arenas` to retrieve this list programmatically.
+
 | Arena | Valid Categories |
-|-------|------------------|
-| **models** | `allcategories`, `website`, `3d`, `dataviz`, `gamedev`, `uicomponent`, `logo`, `image`, `video`, `conversation`, `stt`, `tts`, `slides`, `videotovideo`, `graphicdesign`, `imagetoimage` |
-| **builders** | `website`, `mobile`, `native-android` |
-| **agents** | `webapps`, `agon_webapps` |
+|-------|-----------------|
+| **models** | `allcategories`, `website`, `3d`, `dataviz`, `gamedev`, `uicomponent`, `logo`, `image`, `video`, `slides`, `videotovideo`, `graphicdesign`, `imagetoimage`, `svg` |
+| **builders** | `website`, `mobile` |
+| **agents** | `webapps`, `agon_webapps`, `fullstack` |
 
 <Note>
 `allcategories` aggregates stats across all code generation categories: `website`, `3d`, `dataviz`, `gamedev`, and `uicomponent`.
 </Note>
+
+## OpenRouter Model Mapping
+
+Every leaderboard entry includes an `openRouterId` field that maps to OpenRouter's model identifier. This enables you to cross-reference Design Arena rankings with OpenRouter metadata (pricing, context windows, etc.).
+
+- **`openRouterId: "anthropic/claude-opus-4.6"`** — model is available on OpenRouter
+- **`openRouterId: null`** — model is not available on OpenRouter (proprietary platforms, image/video generators, deprecated models)
