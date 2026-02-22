@@ -87,9 +87,6 @@ The response contains a sorted list of models in the `data` array:
       "openRouterId": "anthropic/claude-opus-4.6",
       "elo": 1390,
       "winRate": 63.0,
-      "wins": 3082,
-      "losses": 1809,
-      "battles": 4891,
       "avgGenerationTimeMs": 122828
     },
     {
@@ -98,16 +95,12 @@ The response contains a sorted list of models in the `data` array:
       "openRouterId": null,
       "elo": 1280,
       "winRate": 60.0,
-      "wins": 1200,
-      "losses": 800,
-      "battles": 2000,
       "avgGenerationTimeMs": 45000
     }
   ],
   "meta": {
     "arena": "models",
     "category": "website",
-    "count": 108,
     "lastUpdated": "2026-02-22T04:00:06Z"
   },
   "timestamp": "2026-02-22T04:51:46Z"
@@ -120,7 +113,6 @@ The response contains a sorted list of models in the `data` array:
 |--------|-------------|
 | **elo** | The core ranking score. Higher is better. Base rating ~1200. |
 | **winRate** | Percentage of head-to-head battles won. |
-| **battles** | Total sample size (wins + losses). More battles = more reliable ELO. |
 | **avgGenerationTimeMs** | Average time to generate output (milliseconds). |
 | **openRouterId** | OpenRouter model ID for cross-referencing. `null` if not on OpenRouter. |
 

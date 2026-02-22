@@ -59,15 +59,6 @@ Use the [List Arenas](/api-reference/arenas) endpoint to discover valid arena/ca
       - **Image/video/audio generators** (e.g., DALL-E, Sora, Kling)
       - **Deprecated or preview models** with no direct OpenRouter equivalent
     </ResponseField>
-    <ResponseField name="wins" type="integer">
-      Total tournament wins
-    </ResponseField>
-    <ResponseField name="losses" type="integer">
-      Total tournament losses
-    </ResponseField>
-    <ResponseField name="battles" type="integer">
-      Total number of battles (wins + losses)
-    </ResponseField>
     <ResponseField name="winRate" type="number">
       Win rate percentage (0-100)
     </ResponseField>
@@ -89,9 +80,6 @@ Use the [List Arenas](/api-reference/arenas) endpoint to discover valid arena/ca
     </ResponseField>
     <ResponseField name="category" type="string">
       The requested category
-    </ResponseField>
-    <ResponseField name="count" type="integer">
-      Number of models in the leaderboard
     </ResponseField>
     <ResponseField name="lastUpdated" type="string">
       ISO timestamp of when the leaderboard was last calculated
@@ -139,9 +127,6 @@ data = response.json()
       "displayName": "Claude Opus 4.6",
       "provider": "anthropic",
       "openRouterId": "anthropic/claude-opus-4.6",
-      "wins": 3082,
-      "losses": 1809,
-      "battles": 4891,
       "winRate": 63.0,
       "elo": 1390,
       "avgGenerationTimeMs": 122828
@@ -150,9 +135,6 @@ data = response.json()
       "displayName": "GPT-5.1 Codex",
       "provider": "openai",
       "openRouterId": "openai/gpt-5.1-codex",
-      "wins": 4862,
-      "losses": 3174,
-      "battles": 8036,
       "winRate": 60.5,
       "elo": 1298,
       "avgGenerationTimeMs": 88348
@@ -161,9 +143,6 @@ data = response.json()
       "displayName": "v0-1.5-lg",
       "provider": "vercel",
       "openRouterId": null,
-      "wins": 1200,
-      "losses": 800,
-      "battles": 2000,
       "winRate": 60.0,
       "elo": 1280,
       "avgGenerationTimeMs": 45000
@@ -172,7 +151,6 @@ data = response.json()
   "meta": {
     "arena": "models",
     "category": "website",
-    "count": 108,
     "lastUpdated": "2026-02-22T04:00:06.216429+00:00"
   },
   "timestamp": "2026-02-22T04:51:46.841Z"

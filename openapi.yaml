@@ -129,34 +129,24 @@ paths:
                   - displayName: "Claude Opus 4.6"
                     provider: "anthropic"
                     openRouterId: "anthropic/claude-opus-4.6"
-                    wins: 3082
-                    losses: 1809
-                    battles: 4891
                     winRate: 63.0
                     elo: 1390
                     avgGenerationTimeMs: 122828
                   - displayName: "GPT-5.1 Codex"
                     provider: "openai"
                     openRouterId: "openai/gpt-5.1-codex"
-                    wins: 4862
-                    losses: 3174
-                    battles: 8036
                     winRate: 60.5
                     elo: 1298
                     avgGenerationTimeMs: 88348
                   - displayName: "v0-1.5-lg"
                     provider: "vercel"
                     openRouterId: null
-                    wins: 1200
-                    losses: 800
-                    battles: 2000
                     winRate: 60.0
                     elo: 1280
                     avgGenerationTimeMs: 45000
                 meta:
                   arena: "models"
                   category: "website"
-                  count: 108
                   lastUpdated: "2026-02-22T04:00:06.216429+00:00"
                 timestamp: "2026-02-22T04:51:46.841Z"
         '400':
@@ -180,6 +170,67 @@ paths:
                     error:
                       code: "INVALID_CATEGORY"
                       message: "Invalid category \"invalid\" for arena \"models\""
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /models:
+    get:
+      summary: List All Models
+      description: |
+        Returns every model with its identity info and rankings nested by
+        arena and category. One call to get all ELO scores, win rates, and
+        generation times across all arenas.
+      operationId: listModels
+      tags:
+        - Models
+      responses:
+        '200':
+          description: All models with nested rankings
+          headers:
+            Cache-Control:
+              description: Caching directive (5 minutes)
+              schema:
+                type: string
+                example: "public, s-maxage=300, stale-while-revalidate=600"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelsResponse'
+              example:
+                success: true
+                data:
+                  - id: "claude-sonnet-4-20250514"
+                    displayName: "Claude Sonnet 4"
+                    provider: "anthropic"
+                    openRouterId: "anthropic/claude-sonnet-4"
+                    rankings:
+                      models:
+                        allcategories:
+                          elo: 1350
+                          winRate: 61.2
+                          avgGenerationTimeMs: 95000
+                        website:
+                          elo: 1380
+                          winRate: 63.0
+                          avgGenerationTimeMs: 92000
+                      agents:
+                        webapps:
+                          elo: 1290
+                          winRate: 58.5
+                          avgGenerationTimeMs: 140000
+                meta:
+                  lastUpdated: "2026-02-22T04:00:06.216429+00:00"
+                timestamp: "2026-02-22T04:51:46.841Z"
+        '401':
+          description: Missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Internal server error
           content:
@@ -278,9 +329,6 @@ components:
         - displayName
         - provider
         - openRouterId
-        - wins
-        - losses
-        - battles
         - winRate
         - elo
         - avgGenerationTimeMs
@@ -304,18 +352,6 @@ components:
             includes proprietary builder tools (e.g., v0, Devin), image/video/audio
             generators, and deprecated models.
           example: "anthropic/claude-opus-4.6"
-        wins:
-          type: integer
-          description: Total number of tournament wins
-          example: 3082
-        losses:
-          type: integer
-          description: Total number of tournament losses
-          example: 1809
-        battles:
-          type: integer
-          description: Total number of battles (wins + losses)
-          example: 4891
         winRate:
           type: number
           format: float
@@ -336,7 +372,6 @@ components:
       required:
         - arena
         - category
-        - count
         - lastUpdated
       properties:
         arena:
@@ -347,10 +382,6 @@ components:
           type: string
           description: The category
           example: "website"
-        count:
-          type: integer
-          description: Number of models in the leaderboard
-          example: 108
         lastUpdated:
           type: string
           format: date-time
@@ -382,8 +413,93 @@ components:
               description: Human-readable error message
               example: "Invalid arena \"invalid\". Must be one of: models, builders, agents"
 
+    ModelsResponse:
+      type: object
+      required:
+        - success
+        - data
+        - meta
+        - timestamp
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelEntry'
+        meta:
+          type: object
+          properties:
+            lastUpdated:
+              type: string
+              format: date-time
+              nullable: true
+              description: Most recent leaderboard calculation time across all arenas
+        timestamp:
+          type: string
+          format: date-time
+
+    ModelEntry:
+      type: object
+      required:
+        - id
+        - displayName
+        - provider
+        - openRouterId
+        - rankings
+      properties:
+        id:
+          type: string
+          description: Internal model identifier (stable)
+          example: "claude-sonnet-4-20250514"
+        displayName:
+          type: string
+          description: Human-readable model name
+          example: "Claude Sonnet 4"
+        provider:
+          type: string
+          description: Model provider/company
+          example: "anthropic"
+        openRouterId:
+          type: string
+          nullable: true
+          description: OpenRouter model ID, or null if not on OpenRouter
+          example: "anthropic/claude-sonnet-4"
+        rankings:
+          type: object
+          description: Nested rankings keyed by arena, then category
+          additionalProperties:
+            type: object
+            additionalProperties:
+              $ref: '#/components/schemas/CategoryRanking'
+
+    CategoryRanking:
+      type: object
+      required:
+        - elo
+        - winRate
+        - avgGenerationTimeMs
+      properties:
+        elo:
+          type: integer
+          description: ELO rating (higher is better, base 1200)
+          example: 1350
+        winRate:
+          type: number
+          format: float
+          description: Win rate percentage (0-100)
+          example: 61.2
+        avgGenerationTimeMs:
+          type: integer
+          nullable: true
+          description: Average generation time in milliseconds
+          example: 95000
+
 tags:
   - name: Discovery
     description: Discover available arenas and categories
+  - name: Models
+    description: Aggregate model data across all arenas
   - name: Leaderboard
     description: Access leaderboard rankings for AI models across different arenas

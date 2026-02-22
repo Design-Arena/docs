@@ -1,0 +1,214 @@
+---
+title: List All Models
+api: GET /models
+description: "Get all models with rankings across every arena and category"
+---
+
+# List All Models
+
+Returns every model with its identity info and ELO/winRate/speed rankings nested by arena and category. One call to get everything -- no need to iterate over individual leaderboard endpoints.
+
+<Info>
+This is the recommended endpoint if you need a complete snapshot of all Design Arena rankings. Responses are cached for **5 minutes**.
+</Info>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the request was successful
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of model objects
+
+  <Expandable title="Model properties">
+    <ResponseField name="id" type="string">
+      Internal model identifier (stable across updates)
+    </ResponseField>
+    <ResponseField name="displayName" type="string">
+      Human-readable model name
+    </ResponseField>
+    <ResponseField name="provider" type="string">
+      Model provider (e.g., "anthropic", "openai", "google")
+    </ResponseField>
+    <ResponseField name="openRouterId" type="string | null">
+      OpenRouter model ID for cross-referencing. `null` if the model is not available on OpenRouter (proprietary platforms, image/video generators, deprecated models).
+    </ResponseField>
+    <ResponseField name="rankings" type="object">
+      Nested rankings keyed by arena, then category. Only arena/category combinations where the model has sufficient data will appear.
+
+      <Expandable title="Rankings structure">
+        Each key is an arena ID (`models`, `builders`, `agents`), containing an object where each key is a category ID:
+
+        <ResponseField name="elo" type="integer">
+          ELO rating (higher is better, base 1200)
+        </ResponseField>
+        <ResponseField name="winRate" type="number">
+          Win rate percentage (0-100)
+        </ResponseField>
+        <ResponseField name="avgGenerationTimeMs" type="integer | null">
+          Average generation time in milliseconds
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="meta" type="object">
+  <Expandable title="Meta properties">
+    <ResponseField name="lastUpdated" type="string | null">
+      ISO timestamp of the most recent leaderboard calculation across all arenas
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="timestamp" type="string">
+  ISO timestamp of when this response was generated
+</ResponseField>
+
+## Examples
+
+<RequestExample>
+```bash curl
+curl -H "Authorization: Bearer sk_live_your_api_key_here" \
+  https://www.designarena.ai/api/v1/models
+```
+
+```javascript JavaScript
+const response = await fetch(
+  'https://www.designarena.ai/api/v1/models',
+  { headers: { 'Authorization': 'Bearer sk_live_your_api_key_here' } }
+);
+const { data } = await response.json();
+
+// Find a specific model
+const claude = data.find(m => m.id.includes('claude'));
+console.log(claude.rankings.models.website.elo);
+```
+
+```python Python
+import requests
+
+response = requests.get(
+  'https://www.designarena.ai/api/v1/models',
+  headers={'Authorization': 'Bearer sk_live_your_api_key_here'}
+)
+models = response.json()['data']
+
+# Sort by website ELO
+website_models = [
+    m for m in models
+    if 'models' in m['rankings'] and 'website' in m['rankings']['models']
+]
+website_models.sort(key=lambda m: m['rankings']['models']['website']['elo'], reverse=True)
+for m in website_models[:10]:
+    print(f"{m['displayName']}: {m['rankings']['models']['website']['elo']}")
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "success": true,
+  "data": [
+    {
+      "id": "claude-sonnet-4-20250514",
+      "displayName": "Claude Sonnet 4",
+      "provider": "anthropic",
+      "openRouterId": "anthropic/claude-sonnet-4",
+      "rankings": {
+        "models": {
+          "allcategories": {
+            "elo": 1350,
+            "winRate": 61.2,
+            "avgGenerationTimeMs": 95000
+          },
+          "website": {
+            "elo": 1380,
+            "winRate": 63.0,
+            "avgGenerationTimeMs": 92000
+          },
+          "image": {
+            "elo": 1220,
+            "winRate": 52.1,
+            "avgGenerationTimeMs": 8500
+          }
+        },
+        "agents": {
+          "webapps": {
+            "elo": 1290,
+            "winRate": 58.5,
+            "avgGenerationTimeMs": 140000
+          }
+        }
+      }
+    },
+    {
+      "id": "v0-1.5-lg",
+      "displayName": "v0-1.5-lg",
+      "provider": "vercel",
+      "openRouterId": null,
+      "rankings": {
+        "builders": {
+          "website": {
+            "elo": 1340,
+            "winRate": 62.0,
+            "avgGenerationTimeMs": 45000
+          }
+        }
+      }
+    }
+  ],
+  "meta": {
+    "lastUpdated": "2026-02-22T04:00:06.216429+00:00"
+  },
+  "timestamp": "2026-02-22T04:51:46.841Z"
+}
+```
+</ResponseExample>
+
+## Usage Patterns
+
+### Cross-reference with OpenRouter pricing
+
+```python
+import requests
+
+headers = {'Authorization': 'Bearer sk_live_your_api_key_here'}
+
+# Get Design Arena rankings
+da_models = requests.get(
+    'https://www.designarena.ai/api/v1/models', headers=headers
+).json()['data']
+
+# Get OpenRouter pricing
+or_models = requests.get('https://openrouter.ai/api/v1/models').json()['data']
+or_pricing = {m['id']: m['pricing'] for m in or_models}
+
+# Combine quality + cost
+for m in da_models:
+    if m['openRouterId'] and m['openRouterId'] in or_pricing:
+        website = m['rankings'].get('models', {}).get('website')
+        if website:
+            price = or_pricing[m['openRouterId']]
+            print(f"{m['displayName']}: ELO {website['elo']}, "
+                  f"${price['prompt']}/1K input tokens")
+```
+
+### Find the best model per arena
+
+```javascript
+const { data: models } = await fetch(url, { headers }).then(r => r.json());
+
+const bestPerArena = {};
+for (const model of models) {
+  for (const [arena, categories] of Object.entries(model.rankings)) {
+    for (const [category, stats] of Object.entries(categories)) {
+      const key = `${arena}/${category}`;
+      if (!bestPerArena[key] || stats.elo > bestPerArena[key].elo) {
+        bestPerArena[key] = { model: model.displayName, ...stats };
+      }
+    }
+  }
+}
+```

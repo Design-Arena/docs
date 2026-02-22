@@ -50,7 +50,7 @@
     },
     {
       "group": "API Reference",
-      "pages": ["api-reference/overview", "api-reference/arenas", "api-reference/leaderboard"]
+      "pages": ["api-reference/overview", "api-reference/arenas", "api-reference/models", "api-reference/leaderboard"]
     }
   ],
   "api": {
