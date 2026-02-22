@@ -238,7 +238,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+security:
+  - BearerAuth: []
+
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: "API key (starts with sk_live_)"
+
   schemas:
     ArenasResponse:
       type: object
