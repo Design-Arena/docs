@@ -47,13 +47,13 @@ paths:
                     name: "Models Arena"
                     description: "Head-to-head comparison of AI model outputs across modalities"
                     categories:
-                      - id: "allcategories"
+                      - id: "codecategories"
                         name: "Code Categories"
                       - id: "website"
                         name: "Website"
                     leaderboardUrl:
-                      - category: "allcategories"
-                        url: "/api/v1/leaderboard/models/allcategories"
+                      - category: "codecategories"
+                        url: "/api/v1/leaderboard/models/codecategories"
                       - category: "website"
                         url: "/api/v1/leaderboard/models/website"
                 timestamp: "2026-02-22T18:00:00.000Z"
@@ -107,8 +107,8 @@ paths:
             image:
               value: image
               summary: Image generation
-            webapps:
-              value: webapps
+            agon_webapps:
+              value: agon_webapps
               summary: Web app agents
       responses:
         '200':
@@ -209,7 +209,7 @@ paths:
                     openRouterId: "anthropic/claude-sonnet-4"
                     rankings:
                       models:
-                        allcategories:
+                        codecategories:
                           elo: 1350
                           winRate: 61.2
                           avgGenerationTimeMs: 95000
@@ -218,7 +218,7 @@ paths:
                           winRate: 63.0
                           avgGenerationTimeMs: 92000
                       agents:
-                        webapps:
+                        agon_webapps:
                           elo: 1290
                           winRate: 58.5
                           avgGenerationTimeMs: 140000
