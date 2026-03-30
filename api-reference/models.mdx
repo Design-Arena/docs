@@ -9,8 +9,12 @@ description: "Get all models with rankings and tournament placement data across 
 Returns every model with its identity info, Elo/winRate/speed rankings nested by arena and category, and tournament ranking distribution (1st–4th place finishes). One call to get everything — no need to iterate over individual leaderboard endpoints.
 
 <Info>
-This is the recommended endpoint if you need a complete snapshot of all Design Arena rankings. Responses are cached for **5 minutes**. Ranking distribution data is pre-computed and refreshed daily.
+This is the recommended endpoint if you need a complete snapshot of all Design Arena rankings. Responses are cached for **5 minutes**.
 </Info>
+
+<Note>
+This data is not realtime. Elo rankings and win rates are recalculated periodically (typically every few hours). Tournament ranking distributions are pre-computed and refreshed daily. Both reflect a recent snapshot of Design Arena activity, not live results.
+</Note>
 
 ## Response
 
