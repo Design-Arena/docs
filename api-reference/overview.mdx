@@ -90,16 +90,16 @@ Leaderboard rankings update in real-time throughout the day as new battles are r
 
 ## Supported Arenas & Categories
 
-Use `GET /arenas` to retrieve this list programmatically.
+Use `GET /arenas` to retrieve this list programmatically. The API returns **display names** (e.g. `Website`, `Models Arena`) in responses, but the leaderboard endpoint accepts both display names and internal slugs as path parameters.
 
-| Arena | Valid Categories |
-|-------|-----------------|
-| **models** | `codecategories`, `website`, `gamedev`, `3d`, `dataviz`, `uicomponent`, `image`, `logo`, `graphicdesign`, `svg`, `ascii`, `video`, `videotovideo`, `imagetovideo`, `multitovideo`, `multimodaltovideo`, `imagetoimage`, `slides`, `tts`, `sts`, `music`, `conversation`, `stt` |
-| **builders** | `website`, `mobile` |
-| **agents** | `agon_webapps`, `mobileapps`, `nativeapps`, `fullstack` |
+| Arena | Display Name | Categories (slug → display name) |
+|-------|-------------|----------------------------------|
+| `models` | Models Arena | `codecategories` → Code Categories, `website` → Website, `gamedev` → Game Dev, `3d` → 3D Design, `dataviz` → Data Visualization, `uicomponent` → UI Component, `image` → Image, `logo` → Logo, `graphicdesign` → Graphic Design, `svg` → SVG, `ascii` → ASCII Art, `video` → Video, `videotovideo` → Video Editing, `imagetovideo` → Image to Video, `multitovideo` → Multi to Video, `multimodaltovideo` → Multimodal to Video, `imagetoimage` → Image Editing, `slides` → Slides, `tts` → Text-to-Speech, `sts` → Voice Chat, `music` → Music, `conversation` → Conversation, `stt` → Speech-to-Text, `worldmodel` → World Model |
+| `builders` | Builders Arena | `website` → Website |
+| `agents` | Agents Arena | `agon_webapps` → Web Apps, `mobileapps` → Mobile Apps, `nativeapps` → Android Native, `fullstack` → Fullstack, `agentic_gamedev` → Agentic Game Dev, `agon_godot` → Godot Game Dev, `agentic_3d` → Agentic 3D, `agon_slides` → Agentic Slides |
 
 <Note>
-`codecategories` aggregates stats across all code generation categories: `website`, `3d`, `dataviz`, `gamedev`, and `uicomponent`.
+`Code Categories` (slug: `codecategories`) aggregates stats across all code generation categories: Website, 3D Design, Data Visualization, Game Dev, and UI Component.
 </Note>
 
 ## OpenRouter Model Mapping

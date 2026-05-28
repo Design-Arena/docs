@@ -43,18 +43,18 @@ paths:
               example:
                 success: true
                 data:
-                  - id: "models"
+                  - id: "Models Arena"
                     name: "Models Arena"
                     description: "Head-to-head comparison of AI model outputs across modalities"
                     categories:
-                      - id: "codecategories"
+                      - id: "Code Categories"
                         name: "Code Categories"
-                      - id: "website"
+                      - id: "Website"
                         name: "Website"
                     leaderboardUrl:
-                      - category: "codecategories"
+                      - category: "Code Categories"
                         url: "/api/v1/leaderboard/models/codecategories"
-                      - category: "website"
+                      - category: "Website"
                         url: "/api/v1/leaderboard/models/website"
                 timestamp: "2026-02-22T18:00:00.000Z"
         '401':
@@ -79,7 +79,9 @@ paths:
         - name: arena
           in: path
           required: true
-          description: The arena type
+          description: |
+            The arena type. Accepts both internal slugs (e.g. `models`) and
+            display names (e.g. `Models Arena`).
           schema:
             type: string
             enum: [models, builders, agents]
@@ -97,7 +99,8 @@ paths:
           in: path
           required: true
           description: |
-            The category within the arena. Use `GET /arenas` to discover valid categories.
+            The category within the arena. Accepts both internal slugs (e.g. `website`)
+            and display names (e.g. `Website`). Use `GET /arenas` to discover valid categories.
           schema:
             type: string
           examples:
@@ -145,8 +148,8 @@ paths:
                     elo: 1280
                     avgGenerationTimeMs: 45000
                 meta:
-                  arena: "models"
-                  category: "website"
+                  arena: "Models Arena"
+                  category: "Website"
                   lastUpdated: "2026-02-22T04:00:06.216429+00:00"
                 timestamp: "2026-02-22T04:51:46.841Z"
         '400':
@@ -209,17 +212,17 @@ paths:
                     provider: "anthropic"
                     openRouterId: "anthropic/claude-sonnet-4"
                     rankings:
-                      models:
-                        codecategories:
+                      Models Arena:
+                        Code Categories:
                           elo: 1350
                           winRate: 61.2
                           avgGenerationTimeMs: 95000
-                        website:
+                        Website:
                           elo: 1380
                           winRate: 63.0
                           avgGenerationTimeMs: 92000
-                      agents:
-                        agon_webapps:
+                      Agents Arena:
+                        Web Apps:
                           elo: 1290
                           winRate: 58.5
                           avgGenerationTimeMs: 140000
@@ -285,8 +288,8 @@ components:
       properties:
         id:
           type: string
-          description: Arena identifier (use in leaderboard endpoint)
-          example: "models"
+          description: Arena display name
+          example: "Models Arena"
         name:
           type: string
           description: Human-readable arena name
@@ -302,7 +305,7 @@ components:
             properties:
               id:
                 type: string
-                example: "website"
+                example: "Website"
               name:
                 type: string
                 example: "Website"
@@ -392,12 +395,12 @@ components:
       properties:
         arena:
           type: string
-          description: The arena type
-          example: "models"
+          description: The arena display name
+          example: "Models Arena"
         category:
           type: string
-          description: The category
-          example: "website"
+          description: The category display name
+          example: "Website"
         lastUpdated:
           type: string
           format: date-time
